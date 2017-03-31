@@ -1,0 +1,47 @@
+第一步，先平衡
+
+gen zone brick p0 0,0,0 p1 500,0,0 p2 0,300,0 p3 0,0,300 size 50 25 25
+group zone shang range z 150 300
+group zone xia range z 0 150
+model mohr
+pro bulk 6e6 she 2.22e6 fric 9 coh 20000 den 1850 range group shang;两层土的赋值不同
+pro bulk 6e6 she 2.22e6 fric 9 coh 20000 den 1880 range group xia
+;边界条件
+fix x range x 0
+fix x range x 500
+fix y range y 0
+fix y range y 300
+fix z range z 0
+;施加力
+set grav 0 0 -9.81
+;求解
+so
+;保存平衡条件
+save BalenceCond.sav
+第二步，开挖支护
+model null range x 210 290 z 90 140
+
+;set large;避免变形较大时不收敛的问题，小变形不开
+
+;设置锚杆
+sel cable id=1 beg 250, 90,140 end 250 ,90,156 nseg 10
+sel cable id=1 beg 250 ,90,156 end 250 ,90,175 nseg 6
+
+sel cable id=1 beg 250, 30,140 end 250 ,30,156 nseg 10
+sel cable id=1 beg 250 ,30,156 end 250 ,30,175 nseg 6
+
+sel cable id=1 beg 250,60,140 end 250 ,60,156 nseg 10
+sel cable id=1 beg 250 ,60,156 end 250 ,60,175 nseg 6
+
+sel cable id=1 prop emod 2e10 ytension 310e3 xcarea 0.0004906 ...
+gr_coh 1 gr_k 1 gr_per 0.0785 range cid 1,10
+sel cable id=1 prop emod 2e10 ytension 310e3 xcarea 0.0004906 ...
+gr_coh 10e5 gr_k 2e7 range cid 1,16
+
+sel delete link range id 1 16 ;1为link编号
+sel link id=100 16 target zone ;100为新的link编号 1为节点号 即在节点1上建立编号为100的node-zone连接
+sel link id=101 5 target zone
+sel link attach xdir=rigid ydir=rigid zdir=rigid xrdir=rigid yrdir=rigid zrdir=rigid range id 100
+
+sel link attach xdir=rigid ydir=rigid zdir=rigid xrdir=rigid yrdir=rigid zrdir=rigid range id 101
+sel cable id=1 pretension 60e3 range cid 1,10 ;cid为结构构件编号
