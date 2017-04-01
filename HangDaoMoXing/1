@@ -1,0 +1,64 @@
+
+;模型设计
+gen zone brick p0 0,0,0 p1 500,0,0 p2 0,300,0 p3 0,0,300 size 50 25 25
+group zone shang range z 150 300
+group zone xia range z 0 150
+
+model mohr
+pro bulk 6e6 she 2.22e6 fric 9 coh 20000 den 1850 range group shang;两层土的赋值不同
+pro bulk 6e6 she 2.22e6 fric 9 coh 20000 den 1880 range group xia
+;边界条件
+fix x range x 0
+fix x range x 500
+fix y range y 0
+fix y range y 300
+fix z range z 0
+;施加力
+set grav 0 0 -9.81
+
+;开挖，根据比例开挖的，距离老顶2m
+model null range x 230 270 z 108 136
+
+;设置顶板锚杆位置
+;中间锚杆，直接顶1.5m，老顶1.5m，锚杆3m
+sel cable id=1 beg 250, 90,135 end 250 ,90,150 nseg 5
+sel cable id=1 beg 250 ,90,150 end 250 ,90,165 nseg 5
+;中间靠左边第一根，间距0.9m
+sel cable id=1 beg 241, 90,135 end 241 ,90,150 nseg 5
+sel cable id=1 beg 241 ,90,150 end 241 ,90,165 nseg 5
+;中间靠左边第二根，间距0.9m，靠侧边0.2m
+sel cable id=1 beg 232, 90,135 end 228 ,90,150 nseg 5
+sel cable id=1 beg 228 ,90,150 end 223 ,90,166 nseg 5
+;中间靠右边第一根，间距0.9m
+sel cable id=1 beg 259, 90,135 end 259 ,90,150 nseg 5
+sel cable id=1 beg 259 ,90,150 end 259 ,90,165 nseg 5
+;中间靠右边第二根，间距0.9m
+sel cable id=1 beg 268, 90,135 end 272 ,90,150 nseg 5
+sel cable id=1 beg 272 ,90,150 end 276 ,90,168 nseg 5
+;设置侧帮锚杆位置，长2.6m
+;左边从上至下第二根
+sel cable id=1 beg 230, 90,126 end 217 ,90,126 nseg 5
+sel cable id=1 beg 217 ,90,126 end 204 ,90,126 nseg 5
+;左边从上到下第三根
+sel cable id=1 beg 230, 90,119 end 217 ,90,119 nseg 5
+sel cable id=1 beg 217 ,90,119 end 204 ,90,119 nseg 5
+;左边从上到下第四根
+sel cable id=1 beg 230, 90,112 end 213 ,90,107 nseg 5
+sel cable id=1 beg 213 ,90,107 end 196 ,90,102 nseg 5
+;左边从上到下第一根
+sel cable id=1 beg 230, 90,133 end 213 ,90,137 nseg 5
+sel cable id=1 beg 213 ,90,137 end 196 ,90,142 nseg 5
+
+
+;右边从上至下第二根
+sel cable id=1 beg 270, 90,126 end 283 ,90,126 nseg 5
+sel cable id=1 beg 283 ,90,126 end 296 ,90,126 nseg 5
+;右边从上到下第三根
+sel cable id=1 beg 270, 90,119 end 283 ,90,119 nseg 5
+sel cable id=1 beg 283 ,90,119 end 296 ,90,119 nseg 5
+;右边从上到下第四根
+sel cable id=1 beg 270, 90,112 end 285 ,90,107 nseg 5
+sel cable id=1 beg 285 ,90,107 end 300 ,90,104 nseg 5
+;右边从上到下第一根
+sel cable id=1 beg 270, 90,133 end 285 ,90,137 nseg 5
+sel cable id=1 beg 285 ,90,137 end 300 ,90,142 nseg 5
